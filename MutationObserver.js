@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 The Toolkitchen Authors. All rights reserved.
+ * Copyright 2012 The Polymer Authors. All rights reserved.
  * Use of this source code is goverened by a BSD-style
  * license that can be found in the LICENSE file.
  */
@@ -46,6 +46,12 @@
       isScheduled = true;
       setImmediate(dispatchCallbacks);
     }
+  }
+
+  function wrapIfNeeded(node) {
+    return window.ShadowDOMPolyfill &&
+        window.ShadowDOMPolyfill.wrapIfNeeded(node) ||
+        node;
   }
 
   function dispatchCallbacks() {
@@ -141,6 +147,8 @@
 
   JsMutationObserver.prototype = {
     observe: function(target, options) {
+      target = wrapIfNeeded(target);
+
       // 1.1
       if (!options.childList && !options.attributes && !options.characterData ||
 
