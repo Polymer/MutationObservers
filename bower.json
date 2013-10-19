@@ -1,0 +1,6 @@
+{
+  "name": "MutationObservers",
+  "version": "0.0.0",
+  "description": "Mutation Observers Polyfill",
+  "main": "MutationObserver.js"
+}
