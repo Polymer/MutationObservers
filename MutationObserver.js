@@ -256,7 +256,8 @@
   /**
    * Creates a record without |oldValue| and caches it as |currentRecord| for
    * later use.
-   * @param {string} oldValue
+   * @param {string} type
+   * @param {Node} target
    * @return {MutationRecord}
    */
   function getRecord(type, target) {
@@ -309,6 +310,18 @@
     return null;
   }
 
+  function unwrap(obj) {
+    if (global.ShadowDOMPolyfill)
+      return ShadowDOMPolyfill.unwrap(obj);
+    return obj;
+  }
+
+  function wrap(obj) {
+    if (global.ShadowDOMPolyfill)
+      return ShadowDOMPolyfill.wrap(obj);
+    return obj;
+  }
+
   /**
    * Class used to represent a registered observer.
    * @param {MutationObserver} observer
@@ -351,6 +364,8 @@
     },
 
     addListeners_: function(node) {
+      node = wrap(node);
+
       var options = this.options;
       if (options.attributes)
         node.addEventListener('DOMAttrModified', this, true);
@@ -370,6 +385,7 @@
     },
 
     removeListeners_: function(node) {
+      node = wrap(node);
       var options = this.options;
       if (options.attributes)
         node.removeEventListener('DOMAttrModified', this, true);
@@ -438,10 +454,10 @@
 
           var name = e.attrName;
           var namespace = e.relatedNode.namespaceURI;
-          var target = e.target;
+          var target = unwrap(e.target);
 
           // 1.
-          var record = new getRecord('attributes', target);
+          var record = getRecord('attributes', target);
           record.attributeName = name;
           record.attributeNamespace = namespace;
 
@@ -472,7 +488,7 @@
 
         case 'DOMCharacterDataModified':
           // http://dom.spec.whatwg.org/#concept-mo-queue-characterdata
-          var target = e.target;
+          var target = unwrap(e.target);
 
           // 1.
           var record = getRecord('characterData', target);
@@ -497,12 +513,13 @@
           break;
 
         case 'DOMNodeRemoved':
-          this.addTransientObserver(e.target);
+          this.addTransientObserver(unwrap(e.target));
           // Fall through.
         case 'DOMNodeInserted':
           // http://dom.spec.whatwg.org/#concept-mo-queue-childlist
-          var target = e.relatedNode;
-          var changedNode = e.target;
+          var target = e.relatedNode;  // TODO(arv): Wrap in shadow dom polyfill
+
+          var changedNode = unwrap(e.target);
           var addedNodes, removedNodes;
           if (e.type === 'DOMNodeInserted') {
             addedNodes = [changedNode];
