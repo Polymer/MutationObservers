@@ -1,7 +1,7 @@
 {
-  "name": "MutationObservers",
+  "name": "mutationobservers",
   "version": "0.0.0",
-  "description": "ERROR: No README.md file found!",
+  "description": "MutationObservers polyfill from Polymer project.",
   "main": "MutationObserver.js",
   "directories": {
     "test": "test"
