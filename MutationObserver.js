@@ -4,7 +4,7 @@
  * license that can be found in the LICENSE file.
  */
 
-if (typeof MutationObserver != 'function') (function(global) {
+if (typeof MutationObserver !== 'function') (function(global) {
 
   var registrationsTable = new (function(){
 			var weakMapMinimalVALUE = [], weakMapMinimalKEY = [];
