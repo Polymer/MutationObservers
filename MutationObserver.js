@@ -4,9 +4,19 @@
  * license that can be found in the LICENSE file.
  */
 
-(function(global) {
+if (typeof MutationObserver !== 'function') (function(global) {
 
-  var registrationsTable = new WeakMap();
+  var registrationsTable = new (function(){
+			var weakMapMinimalVALUE = [], weakMapMinimalKEY = [];
+			this.get = function(key){
+				return weakMapMinimalVALUE[weakMapMinimalKEY.indexOf(key)];
+			};
+			this.set = function(key, value){
+				var keycur = weakMapMinimalKEY.indexOf(key);
+				if (!~keycur) weakMapMinimalKEY[keycur = weakMapMinimalKEY.length] = key;
+				weakMapMinimalVALUE[keycur] = value;
+			};
+		}); //new WeakMap(); // WeakMaps are not supported in IE10 or IE9, same as MutationObservers
 
   // We use setImmediate or postMessage for our future callback.
   var setImmediate = window.msSetImmediate;
